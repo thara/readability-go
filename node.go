@@ -440,6 +440,18 @@ func documentBody(doc *html.Node) *html.Node {
 	return body
 }
 
+func removeCommentNodes(n *html.Node) {
+	for c := n.FirstChild; c != nil; {
+		next := c.NextSibling
+		if c.Type == html.CommentNode {
+			n.RemoveChild(c)
+		} else {
+			removeCommentNodes(c)
+		}
+		c = next
+	}
+}
+
 func documentElement(doc *html.Node) *html.Node {
 	for c := doc.FirstChild; c != nil; c = c.NextSibling {
 		if c.Type == html.ElementNode && c.Data == "html" {

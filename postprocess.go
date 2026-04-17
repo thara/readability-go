@@ -31,7 +31,11 @@ func (p *parser) fixRelativeUris(articleContent *html.Node) {
 		if err != nil {
 			return uri
 		}
-		return base.ResolveReference(ref).String()
+		resolved := base.ResolveReference(ref)
+		if resolved.Path == "" && resolved.Host != "" {
+			resolved.Path = "/"
+		}
+		return resolved.String()
 	}
 
 	links := getAllNodesWithTag(articleContent, []string{"a"})

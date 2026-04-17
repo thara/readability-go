@@ -90,6 +90,8 @@ func Parse(r io.Reader, documentURI string, opts ...Option) (*Article, error) {
 		return nil, err
 	}
 
+	removeCommentNodes(doc)
+
 	p := newParser(documentURI, opts...)
 	p.rawHTML = rawHTML
 	p.doc = doc

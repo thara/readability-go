@@ -3,6 +3,7 @@ package readability
 import (
 	"bytes"
 	"io"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -118,7 +119,17 @@ func (p *parser) run() (*Article, error) {
 
 	baseFromDoc := findDocumentBaseURI(p.doc)
 	if baseFromDoc != "" {
-		p.baseURI = baseFromDoc
+		docBase, err := url.Parse(p.documentURI)
+		if err == nil {
+			ref, err := url.Parse(baseFromDoc)
+			if err == nil {
+				p.baseURI = docBase.ResolveReference(ref).String()
+			} else {
+				p.baseURI = baseFromDoc
+			}
+		} else {
+			p.baseURI = baseFromDoc
+		}
 	}
 
 	articleContent := p.grabArticle()

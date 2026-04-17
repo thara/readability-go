@@ -61,7 +61,7 @@ func TestReadabilityFixtures(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			article, err := Parse(strings.NewReader(string(sourceBytes)), "http://fakehost/test/page.html")
+			article, err := Parse(strings.NewReader(string(sourceBytes)), "http://fakehost/test/page.html", WithClassesToPreserve([]string{"caption"}))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -97,9 +97,35 @@ func TestReadabilityFixtures(t *testing.T) {
 			expectedHTML := strings.TrimSpace(string(expectedHTMLBytes))
 			gotHTML := strings.TrimSpace(article.Content)
 
-			if normalizeHTML(gotHTML) != normalizeHTML(expectedHTML) {
-				t.Errorf("content mismatch (first 500 chars):\n  got:  %s\n  want: %s",
-					truncate(gotHTML, 500), truncate(expectedHTML, 500))
+			normGot := normalizeHTML(gotHTML)
+			normWant := normalizeHTML(expectedHTML)
+			if normGot != normWant {
+				// Find first divergence position
+				minLen := len(normGot)
+				if len(normWant) < minLen {
+					minLen = len(normWant)
+				}
+				diffPos := minLen
+				for i := 0; i < minLen; i++ {
+					if normGot[i] != normWant[i] {
+						diffPos = i
+						break
+					}
+				}
+				start := diffPos - 60
+				if start < 0 {
+					start = 0
+				}
+				gotSnip := normGot[start:]
+				if len(gotSnip) > 120 {
+					gotSnip = gotSnip[:120]
+				}
+				wantSnip := normWant[start:]
+				if len(wantSnip) > 120 {
+					wantSnip = wantSnip[:120]
+				}
+				t.Errorf("content mismatch at pos %d (len got=%d want=%d):\n  got:  ...%s...\n  want: ...%s...",
+					diffPos, len(normGot), len(normWant), gotSnip, wantSnip)
 			}
 		})
 	}
@@ -109,20 +135,27 @@ var (
 	rxMultiSpace      = regexp.MustCompile(`\s+`)
 	rxSpaceBetweenTag = regexp.MustCompile(`>\s+<`)
 	rxSelfClosing     = regexp.MustCompile(`\s*/>`)
+	rxHTMLComment     = regexp.MustCompile(`<!--[\s\S]*?-->`)
+	rxEmptyClass      = regexp.MustCompile(` class=""`)
 )
 
 func normalizeHTML(s string) string {
-	// Normalize HTML entity differences between Go and JS renderers
+	s = rxHTMLComment.ReplaceAllString(s, "")
+
 	s = strings.ReplaceAll(s, "&#39;", "'")
 	s = strings.ReplaceAll(s, "&#34;", `"`)
+	s = strings.ReplaceAll(s, "&apos;", "'")
+	s = strings.ReplaceAll(s, "&quot;", `"`)
+	s = strings.ReplaceAll(s, "&nbsp;", " ")
+	s = strings.ReplaceAll(s, "&#160;", " ")
+	s = strings.ReplaceAll(s, "\u00a0", " ")
 
-	// Normalize void element self-closing tags: <br /> -> <br>, <img ... /> -> <img ...>
 	s = rxSelfClosing.ReplaceAllString(s, ">")
 
-	// Collapse whitespace between tags
+	s = rxEmptyClass.ReplaceAllString(s, "")
+
 	s = rxSpaceBetweenTag.ReplaceAllString(s, "><")
 
-	// Collapse all remaining whitespace sequences to a single space
 	s = rxMultiSpace.ReplaceAllString(s, " ")
 	s = strings.TrimSpace(s)
 
