@@ -101,7 +101,7 @@ func (p *parser) simplifyNestedElements(articleContent *html.Node) {
 		tag := tagName(node)
 		if node.Parent != nil && (tag == "DIV" || tag == "SECTION") {
 			id := nodeID(node)
-			if !(id != "" && strings.HasPrefix(id, "readability")) {
+			if id == "" || !strings.HasPrefix(id, "readability") {
 				if isElementWithoutContent(node) {
 					node = removeAndGetNext(node)
 					continue
