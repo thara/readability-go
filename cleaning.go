@@ -1,6 +1,7 @@
 package readability
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 
@@ -462,10 +463,8 @@ func (p *parser) cleanConditionally(e *html.Node, tag string) {
 		}
 
 		tables := getElementsByTagName(node, "table")
-		for _, tbl := range tables {
-			if isDataTable(tbl) {
-				return false
-			}
+		if slices.ContainsFunc(tables, isDataTable) {
+			return false
 		}
 
 		weight := p.getClassWeight(node)

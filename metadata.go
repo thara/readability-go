@@ -38,7 +38,7 @@ func (p *parser) getJSONLD() articleMetadata {
 
 		content := rxCDATA.ReplaceAllString(textContent(script), "")
 
-		var parsed interface{}
+		var parsed any
 		if err := json.Unmarshal([]byte(content), &parsed); err != nil {
 			continue
 		}
@@ -48,7 +48,7 @@ func (p *parser) getJSONLD() articleMetadata {
 			continue
 		}
 
-		obj, ok := parsed.(map[string]interface{})
+		obj, ok := parsed.(map[string]any)
 		if !ok {
 			continue
 		}
@@ -59,7 +59,7 @@ func (p *parser) getJSONLD() articleMetadata {
 			if !rxSchemaOrg.MatchString(v) {
 				continue
 			}
-		case map[string]interface{}:
+		case map[string]any:
 			vocab, _ := v["@vocab"].(string)
 			if !rxSchemaOrg.MatchString(vocab) {
 				continue
@@ -70,13 +70,13 @@ func (p *parser) getJSONLD() articleMetadata {
 
 		atType, _ := obj["@type"].(string)
 		if atType == "" {
-			graph, ok := obj["@graph"].([]interface{})
+			graph, ok := obj["@graph"].([]any)
 			if !ok {
 				continue
 			}
 			obj = nil
 			for _, item := range graph {
-				m, ok := item.(map[string]interface{})
+				m, ok := item.(map[string]any)
 				if !ok {
 					continue
 				}
@@ -118,14 +118,14 @@ func (p *parser) getJSONLD() articleMetadata {
 
 		if author := obj["author"]; author != nil {
 			switch a := author.(type) {
-			case map[string]interface{}:
+			case map[string]any:
 				if authorName, ok := a["name"].(string); ok {
 					metadata.byline = strings.TrimSpace(authorName)
 				}
-			case []interface{}:
+			case []any:
 				var names []string
 				for _, item := range a {
-					if m, ok := item.(map[string]interface{}); ok {
+					if m, ok := item.(map[string]any); ok {
 						if authorName, ok := m["name"].(string); ok {
 							names = append(names, strings.TrimSpace(authorName))
 						}
@@ -140,7 +140,7 @@ func (p *parser) getJSONLD() articleMetadata {
 		if desc, ok := obj["description"].(string); ok {
 			metadata.excerpt = strings.TrimSpace(desc)
 		}
-		if pub, ok := obj["publisher"].(map[string]interface{}); ok {
+		if pub, ok := obj["publisher"].(map[string]any); ok {
 			if pubName, ok := pub["name"].(string); ok {
 				metadata.siteName = strings.TrimSpace(pubName)
 			}
@@ -153,11 +153,11 @@ func (p *parser) getJSONLD() articleMetadata {
 	return metadata
 }
 
-func (p *parser) findJSONLDArticle(parsed interface{}) interface{} {
+func (p *parser) findJSONLDArticle(parsed any) any {
 	switch v := parsed.(type) {
-	case []interface{}:
+	case []any:
 		for _, item := range v {
-			if m, ok := item.(map[string]interface{}); ok {
+			if m, ok := item.(map[string]any); ok {
 				t, _ := m["@type"].(string)
 				if rxJSONLdArticleTypes.MatchString(t) {
 					return m

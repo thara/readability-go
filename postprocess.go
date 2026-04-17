@@ -2,6 +2,7 @@ package readability
 
 import (
 	"net/url"
+	"slices"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -129,11 +130,8 @@ func (p *parser) cleanClasses(node *html.Node) {
 		parts := strings.Fields(cls)
 		var preserved []string
 		for _, part := range parts {
-			for _, keep := range p.classesToPreserve {
-				if part == keep {
-					preserved = append(preserved, part)
-					break
-				}
+			if slices.Contains(p.classesToPreserve, part) {
+				preserved = append(preserved, part)
 			}
 		}
 		if len(preserved) > 0 {

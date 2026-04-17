@@ -2,6 +2,7 @@ package readability
 
 import (
 	"math"
+	"slices"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -412,11 +413,8 @@ func (p *parser) grabArticle() *html.Node {
 				for parentOfTopCandidate != nil && tagName(parentOfTopCandidate) != "BODY" {
 					listsContainingThisAncestor := 0
 					for ancestorIdx := 0; ancestorIdx < len(alternativeCandidateAncestors) && listsContainingThisAncestor < minimumTopCandidates; ancestorIdx++ {
-						for _, anc := range alternativeCandidateAncestors[ancestorIdx] {
-							if anc == parentOfTopCandidate {
-								listsContainingThisAncestor++
-								break
-							}
+						if slices.Contains(alternativeCandidateAncestors[ancestorIdx], parentOfTopCandidate) {
+							listsContainingThisAncestor++
 						}
 					}
 					if listsContainingThisAncestor >= minimumTopCandidates {

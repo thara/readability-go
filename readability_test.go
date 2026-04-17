@@ -113,10 +113,7 @@ func TestReadabilityFixtures(t *testing.T) {
 			normWant := normalizeHTML(expectedHTML)
 			if normGot != normWant {
 				// Find first divergence position
-				minLen := len(normGot)
-				if len(normWant) < minLen {
-					minLen = len(normWant)
-				}
+				minLen := min(len(normWant), len(normGot))
 				diffPos := minLen
 				for i := 0; i < minLen; i++ {
 					if normGot[i] != normWant[i] {
@@ -124,10 +121,7 @@ func TestReadabilityFixtures(t *testing.T) {
 						break
 					}
 				}
-				start := diffPos - 60
-				if start < 0 {
-					start = 0
-				}
+				start := max(diffPos-60, 0)
 				gotSnip := normGot[start:]
 				if len(gotSnip) > 120 {
 					gotSnip = gotSnip[:120]
@@ -144,12 +138,12 @@ func TestReadabilityFixtures(t *testing.T) {
 }
 
 var (
-	rxMultiSpace      = regexp.MustCompile(`\s+`)
-	rxSpaceBetweenTag = regexp.MustCompile(`>\s+<`)
-	rxSelfClosing     = regexp.MustCompile(`\s*/>`)
-	rxHTMLComment     = regexp.MustCompile(`<!--[\s\S]*?-->`)
-	rxEmptyClass      = regexp.MustCompile(` class=""`)
-	rxTbody           = regexp.MustCompile(`</?tbody>`)
+	rxMultiSpace       = regexp.MustCompile(`\s+`)
+	rxSpaceBetweenTag  = regexp.MustCompile(`>\s+<`)
+	rxSelfClosing      = regexp.MustCompile(`\s*/>`)
+	rxHTMLComment      = regexp.MustCompile(`<!--[\s\S]*?-->`)
+	rxEmptyClass       = regexp.MustCompile(` class=""`)
+	rxTbody            = regexp.MustCompile(`</?tbody>`)
 	rxSpaceBeforeClose = regexp.MustCompile(`\s+(</(?:p|li|td|th|div|h[1-6])>)`)
 )
 
