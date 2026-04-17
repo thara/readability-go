@@ -97,13 +97,8 @@ func (p *parser) unwrapNoscriptImages() {
 
 	noscripts := getElementsByTagName(p.doc, "noscript")
 	for _, noscript := range noscripts {
-		if !isSingleImage(noscript) {
-			continue
-		}
-
-		tmp := createElement("div")
 		tmpContent := textContent(noscript)
-		// Parse the noscript innerHTML
+		tmp := createElement("div")
 		fragment, err := html.ParseFragment(strings.NewReader(tmpContent), &html.Node{
 			Type:     html.ElementNode,
 			Data:     "div",
@@ -114,6 +109,10 @@ func (p *parser) unwrapNoscriptImages() {
 		}
 		for _, f := range fragment {
 			appendChild(tmp, f)
+		}
+
+		if !isSingleImage(tmp) {
+			continue
 		}
 
 		prevElement := previousElementSibling(noscript)
@@ -373,6 +372,7 @@ func (p *parser) fixLazyImages(root *html.Node) {
 			}
 		}
 
+		src = getAttr(elem, "src")
 		srcset := getAttr(elem, "srcset")
 		hasSrc := src != ""
 		hasSrcset := srcset != "" && srcset != "null"

@@ -137,6 +137,36 @@ var (
 	rxSelfClosing     = regexp.MustCompile(`\s*/>`)
 	rxHTMLComment     = regexp.MustCompile(`<!--[\s\S]*?-->`)
 	rxEmptyClass      = regexp.MustCompile(` class=""`)
+	rxTbody           = regexp.MustCompile(`</?tbody>`)
+	rxSpaceBeforeClose = regexp.MustCompile(`\s+(</(?:p|li|td|th|div|h[1-6])>)`)
+)
+
+var svgCaseReplacer = strings.NewReplacer(
+	"viewBox", "viewbox",
+	"clipPath", "clippath",
+	"clipPathUnits", "clippathunits",
+	"fillOpacity", "fillopacity",
+	"gradientTransform", "gradienttransform",
+	"gradientUnits", "gradientunits",
+	"markerHeight", "markerheight",
+	"markerWidth", "markerwidth",
+	"patternContentUnits", "patterncontentunits",
+	"patternTransform", "patterntransform",
+	"patternUnits", "patternunits",
+	"preserveAspectRatio", "preserveaspectratio",
+	"spreadMethod", "spreadmethod",
+	"stopColor", "stopcolor",
+	"stopOpacity", "stopopacity",
+	"strokeDasharray", "strokedasharray",
+	"strokeDashoffset", "strokedashoffset",
+	"strokeLinecap", "strokelinecap",
+	"strokeLinejoin", "strokelinejoin",
+	"strokeMiterlimit", "strokemiterlimit",
+	"strokeOpacity", "strokeopacity",
+	"strokeWidth", "strokewidth",
+	"textAnchor", "textanchor",
+	"textDecoration", "textdecoration",
+	"textRendering", "textrendering",
 )
 
 func normalizeHTML(s string) string {
@@ -153,6 +183,12 @@ func normalizeHTML(s string) string {
 	s = rxSelfClosing.ReplaceAllString(s, ">")
 
 	s = rxEmptyClass.ReplaceAllString(s, "")
+
+	s = rxTbody.ReplaceAllString(s, "")
+
+	s = svgCaseReplacer.Replace(s)
+
+	s = rxSpaceBeforeClose.ReplaceAllString(s, "$1")
 
 	s = rxSpaceBetweenTag.ReplaceAllString(s, "><")
 
