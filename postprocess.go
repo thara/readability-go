@@ -30,7 +30,10 @@ func (p *parser) fixRelativeUris(articleContent *html.Node) {
 		}
 		ref, err := url.Parse(uri)
 		if err != nil {
-			return uri
+			ref, err = url.Parse("./" + uri)
+			if err != nil {
+				return uri
+			}
 		}
 		resolved := base.ResolveReference(ref)
 		if resolved.Path == "" && resolved.Host != "" {

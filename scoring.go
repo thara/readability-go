@@ -269,28 +269,24 @@ func (p *parser) grabArticle() *html.Node {
 				for childNode != nil {
 					nextSibling := childNode.NextSibling
 					if isPhrasingContent(childNode) {
-						var collected []*html.Node
+						fragment := createElement("div")
 						for childNode != nil && isPhrasingContent(childNode) {
 							nextSibling = childNode.NextSibling
-							collected = append(collected, childNode)
+							appendChild(fragment, childNode)
 							childNode = nextSibling
 						}
-
-						// Trim leading whitespace
-						for len(collected) > 0 && isWhitespace(collected[0]) {
-							collected = collected[1:]
+						for fragment.FirstChild != nil && isWhitespace(fragment.FirstChild) {
+							removeNode(fragment.FirstChild)
 						}
-						// Trim trailing whitespace
-						for len(collected) > 0 && isWhitespace(collected[len(collected)-1]) {
-							collected = collected[:len(collected)-1]
+						for fragment.LastChild != nil && isWhitespace(fragment.LastChild) {
+							removeNode(fragment.LastChild)
 						}
-
-						if len(collected) > 0 {
+						if fragment.FirstChild != nil {
 							newP := createElement("p")
-							insertBefore(node, newP, nextSibling)
-							for _, c := range collected {
-								appendChild(newP, c)
+							for fragment.FirstChild != nil {
+								appendChild(newP, fragment.FirstChild)
 							}
+							insertBefore(node, newP, nextSibling)
 						}
 					}
 					childNode = nextSibling
