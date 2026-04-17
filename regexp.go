@@ -11,21 +11,13 @@ var (
 
 	rxNegative = regexp.MustCompile(`(?i)-ad-|hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|footer|gdpr|masthead|media|meta|outbrain|promo|related|scroll|share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|widget`)
 
-	rxExtraneous = regexp.MustCompile(`(?i)print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|sign|single|utility`)
-
 	rxByline = regexp.MustCompile(`(?i)byline|author|dateline|writtenby|p-author`)
-
-	rxReplaceFonts = regexp.MustCompile(`(?i)<(\/?)font[^>]*>`)
 
 	rxNormalize = regexp.MustCompile(`\s{2,}`)
 
 	rxVideos = regexp.MustCompile(`(?i)//(www\.)?((dailymotion|youtube|youtube-nocookie|player\.vimeo|v\.qq|bilibili|live\.bilibili)\.com|(archive|upload\.wikimedia)\.org|player\.twitch\.tv)`)
 
 	rxShareElements = regexp.MustCompile(`(?i)(\b|_)(share|sharedaddy)(\b|_)`)
-
-	rxNextLink = regexp.MustCompile(`(?i)(next|weiter|continue|>([^\|]|$)|»([^\|]|$))`)
-
-	rxPrevLink = regexp.MustCompile(`(?i)(prev|earl|old|new|<|«)`)
 
 	rxTokenize = regexp.MustCompile(`\W+`)
 
@@ -53,11 +45,7 @@ var (
 
 	rxSrcCandidate = regexp.MustCompile(`(?i)^\s*\S+\.(jpg|jpeg|png|webp)\S*\s*$`)
 
-	rxTitleSeparators = regexp.MustCompile(`\s[\|\-\x{2013}\x{2014}\\\/>\x{00BB}]\s`)
-
 	rxTitleHierarchicalSep = regexp.MustCompile(`\s[\\\/>\x{00BB}]\s`)
-
-	rxTitleRemoveFirstPart = regexp.MustCompile(`(?i)^[^\|\-\x{2013}\x{2014}\\\/>\x{00BB}]*[\|\-\x{2013}\x{2014}\\\/>\x{00BB}]`)
 
 	rxPropertyPattern = regexp.MustCompile(`(?i)\s*(article|dc|dcterm|og|twitter)\s*:\s*(author|creator|description|published_time|title|site_name)\s*`)
 

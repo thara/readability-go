@@ -97,15 +97,6 @@ func innerHTML(n *html.Node) string {
 	return sb.String()
 }
 
-func outerHTML(n *html.Node) string {
-	if n == nil {
-		return ""
-	}
-	var sb strings.Builder
-	html.Render(&sb, n)
-	return sb.String()
-}
-
 func children(n *html.Node) []*html.Node {
 	var result []*html.Node
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -275,14 +266,6 @@ func getNodeAncestors(node *html.Node, maxDepth int) []*html.Node {
 	return ancestors
 }
 
-func isElementNode(n *html.Node) bool {
-	return n != nil && n.Type == html.ElementNode
-}
-
-func isTextNode(n *html.Node) bool {
-	return n != nil && n.Type == html.TextNode
-}
-
 func isPhrasingContent(n *html.Node) bool {
 	if n.Type == html.TextNode {
 		return true
@@ -446,10 +429,3 @@ func documentElement(doc *html.Node) *html.Node {
 	return nil
 }
 
-func documentTitle(doc *html.Node) string {
-	titles := getElementsByTagName(doc, "title")
-	if len(titles) > 0 {
-		return getInnerText(titles[0], true)
-	}
-	return ""
-}
