@@ -343,11 +343,12 @@ func (p *parser) grabArticle() *html.Node {
 				}
 
 				var scoreDivider float64
-				if level == 0 {
+				switch level {
+				case 0:
 					scoreDivider = 1
-				} else if level == 1 {
+				case 1:
 					scoreDivider = 2
-				} else {
+				default:
 					scoreDivider = float64(level) * 3
 				}
 				p.scores[ancestor].score += cs / scoreDivider
