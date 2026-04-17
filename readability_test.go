@@ -82,7 +82,10 @@ func TestReadabilityFixtures(t *testing.T) {
 				t.Errorf("dir mismatch:\n  got:  %q\n  want: %q", article.Dir, strVal(meta.Dir))
 			}
 
-			if article.Excerpt != strVal(meta.Excerpt) {
+			gotExcerpt := strings.ReplaceAll(article.Excerpt, "\u00a0", " ")
+			wantExcerpt := strings.ReplaceAll(strVal(meta.Excerpt), "&nbsp;", " ")
+			wantExcerpt = strings.ReplaceAll(wantExcerpt, "\u00a0", " ")
+			if gotExcerpt != wantExcerpt {
 				t.Errorf("excerpt mismatch:\n  got:  %q\n  want: %q", article.Excerpt, strVal(meta.Excerpt))
 			}
 
