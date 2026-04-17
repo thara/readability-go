@@ -92,7 +92,7 @@ func innerHTML(n *html.Node) string {
 	}
 	var sb strings.Builder
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		html.Render(&sb, c)
+		html.Render(&sb, c) //nolint:errcheck // strings.Builder.Write never returns an error
 	}
 	return sb.String()
 }

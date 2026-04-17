@@ -35,7 +35,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error fetching URL: %v\n", err)
 			os.Exit(1)
 		}
-		defer resp.Body.Close()
+		defer resp.Body.Close() //nolint:errcheck // read-only; error on close is non-actionable
 		r = resp.Body
 		documentURI = arg
 		if *baseURL != "" {
@@ -47,7 +47,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error opening file: %v\n", err)
 			os.Exit(1)
 		}
-		defer f.Close()
+		defer f.Close() //nolint:errcheck // read-only; error on close is non-actionable
 		r = f
 		documentURI = "file://" + arg
 		if *baseURL != "" {
