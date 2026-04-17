@@ -154,19 +154,11 @@ func previousElementSibling(n *html.Node) *html.Node {
 func getElementsByTagName(n *html.Node, tag string) []*html.Node {
 	tag = strings.ToLower(tag)
 	var result []*html.Node
-	var walk func(*html.Node)
-	walk = func(node *html.Node) {
-		if node.Type == html.ElementNode {
-			if tag == "*" || node.Data == tag {
-				result = append(result, node)
-			}
-		}
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			walk(c)
-		}
-	}
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		walk(c)
+		if c.Type == html.ElementNode && (tag == "*" || c.Data == tag) {
+			result = append(result, c)
+		}
+		result = append(result, getElementsByTagName(c, tag)...)
 	}
 	return result
 }
@@ -422,22 +414,15 @@ func isSingleImage(node *html.Node) bool {
 }
 
 func documentBody(doc *html.Node) *html.Node {
-	var body *html.Node
-	var walk func(*html.Node)
-	walk = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "body" {
-			body = n
-			return
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		if c.Type == html.ElementNode && c.Data == "body" {
+			return c
 		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			walk(c)
-			if body != nil {
-				return
-			}
+		if found := documentBody(c); found != nil {
+			return found
 		}
 	}
-	walk(doc)
-	return body
+	return nil
 }
 
 func removeCommentNodes(n *html.Node) {
