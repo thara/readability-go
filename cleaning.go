@@ -317,7 +317,9 @@ func getRowAndColumnCount(table *html.Node) (int, int) {
 		rowspanStr := getAttr(tr, "rowspan")
 		rowspan := 0
 		if rowspanStr != "" {
-			rowspan, _ = strconv.Atoi(rowspanStr)
+			if v, err := strconv.Atoi(rowspanStr); err == nil {
+				rowspan = v
+			}
 		}
 		if rowspan == 0 {
 			rowspan = 1
@@ -330,7 +332,9 @@ func getRowAndColumnCount(table *html.Node) (int, int) {
 			colspanStr := getAttr(cell, "colspan")
 			colspan := 0
 			if colspanStr != "" {
-				colspan, _ = strconv.Atoi(colspanStr)
+				if v, err := strconv.Atoi(colspanStr); err == nil {
+					colspan = v
+				}
 			}
 			if colspan == 0 {
 				colspan = 1
