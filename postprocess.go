@@ -20,6 +20,7 @@ func (p *parser) fixRelativeUris(articleContent *html.Node) {
 	documentURI := p.documentURI
 
 	toAbsoluteURI := func(uri string) string {
+		uri = strings.TrimSpace(uri)
 		if baseURI == documentURI && len(uri) > 0 && uri[0] == '#' {
 			return uri
 		}
@@ -35,7 +36,11 @@ func (p *parser) fixRelativeUris(articleContent *html.Node) {
 		if resolved.Path == "" && resolved.Host != "" {
 			resolved.Path = "/"
 		}
-		return resolved.String()
+		result := resolved.String()
+		if strings.HasSuffix(uri, "#") && !strings.HasSuffix(result, "#") {
+			result += "#"
+		}
+		return result
 	}
 
 	links := getAllNodesWithTag(articleContent, []string{"a"})

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 func (p *parser) removeScripts() {
@@ -101,8 +102,8 @@ func (p *parser) unwrapNoscriptImages() {
 		tmp := createElement("div")
 		fragment, err := html.ParseFragment(strings.NewReader(tmpContent), &html.Node{
 			Type:     html.ElementNode,
-			Data:     "div",
-			DataAtom: 0,
+			Data:     "body",
+			DataAtom: atom.Body,
 		})
 		if err != nil || len(fragment) == 0 {
 			continue
